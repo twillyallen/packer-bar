@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thomas's Cocktail Book</title>
+<style>
+  :root {
+    --bg: #0c1712;
+    --panel: #142921;
+    --panel-hover: #1a332a;
+    --accent: #a5842f;
+    --accent-soft: #cfae5c;
+    --text: #eee8da;
+    --text-dim: #a3b3a6;
+    --border: #24402f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #0f1c16 0%, #0c1712 100%);
+    color: var(--text);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    padding: 40px 20px 80px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  header h1 {
+    font-size: 2.4rem;
+    letter-spacing: 2px;
+    color: var(--accent-soft);
+    margin-bottom: 6px;
+    font-weight: 400;
+  }
+  header .sub {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  header .divider {
+    width: 80px;
+    height: 2px;
+    background: var(--accent);
+    margin: 18px auto 0;
+  }
+  #search {
+    display: block;
+    max-width: 420px;
+    margin: 30px auto 40px;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+  }
+  #search:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .controls {
+    max-width: 420px;
+    margin: 30px auto 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  #glassFilter, #liquorFilter {
+    padding: 12px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+  }
+  #glassFilter:focus, #liquorFilter:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .glass-badge {
+    display: inline-block;
+    margin: 0 0 14px;
+    padding: 4px 10px;
+    background: rgba(165, 132, 47, 0.15);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    color: var(--accent-soft);
+    font-family: Arial, sans-serif;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .grid {
+    max-width: 950px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .card h2 {
+    margin: 0 0 14px;
+    color: var(--accent-soft);
+    font-size: 1.35rem;
+    font-weight: 400;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+  }
+  .card h3 {
+    margin: 16px 0 8px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    font-family: Arial, sans-serif;
+  }
+  .card ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text);
+  }
+  .card ul li {
+    margin-bottom: 4px;
+  }
+  .card ol {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .card ol li {
+    margin-bottom: 6px;
+  }
+  .card.hidden {
+    display: none;
+  }
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    margin-top: 60px;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Thomas' Packer Bar</h1>
+  <div class="sub">Cocktail Library</div>
+  <div class="divider"></div>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Search recipes or ingredients...">
+  <select id="glassFilter">
+    <option value="">All Glasses</option>
+    <option value="coupe">Coupe</option>
+    <option value="rocks">Rocks</option>
+    <option value="highball">Highball</option>
+  </select>
+  <select id="liquorFilter">
+    <option value="">All Liquors</option>
+    <option value="vodka">Vodka</option>
+    <option value="gin">Gin</option>
+    <option value="rum">Rum</option>
+    <option value="tequila">Tequila</option>
+    <option value="whiskey">Whiskey</option>
+  </select>
+</div>
+
+<div class="grid" id="grid">
+
+  <div class="card" data-search="espresso martini vodka espresso coffee liqueur simple syrup" data-glass="coupe" data-liquor="vodka">
+    <h2>Espresso Martini</h2>
+    <div class="glass-badge">Coupe</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>2oz Vodka</li>
+      <li>1oz Espresso</li>
+      <li>1/2oz Coffee Liqueur</li>
+      <li>1/2oz Simple Syrup</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>In a shaker, combine all ingredients over ice.</li>
+      <li>Shake frickin' HARD. Double Strain</li>
+    </ol>
+  </div>
+
+  <div class="card" data-search="manhattan rye sweet vermouth angostura bitters" data-glass="coupe" data-liquor="whiskey">
+    <h2>Manhattan</h2>
+    <div class="glass-badge">Coupe</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>2oz Rye</li>
+      <li>1oz Sweet Vermouth</li>
+      <li>2 dashes Angostura Bitters</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>Fill a shaker about three-quarters full of ice and add the rye, vermouth, and bitters. Stir for about 30 seconds.</li>
+      <li>Strain.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-search="old fashioned bittermilk angostura bitters simple syrup bourbon water" data-glass="rocks" data-liquor="whiskey">
+    <h2>Old Fashioned</h2>
+    <div class="glass-badge">Rocks</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>1/2oz Bittermilk (or 4 dashes Angostura Bitters)</li>
+      <li>1/4oz Simple Syrup</li>
+      <li>2oz Bourbon</li>
+      <li>1/2oz Water</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>Stir.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-search="malibu sunset pineapple juice grenadine rum" data-glass="highball" data-liquor="rum">
+    <h2>Malibu Sunset</h2>
+    <div class="glass-badge">Highball</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>2oz Malibu</li>
+      <li>4oz Pineapple Juice</li>
+      <li>1/2oz Grenadine</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>Stir Malibu and pineapple juice.</li>
+      <li>Pour grenadine sloooowly at the end.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-search="rocket pop grenadine silver rum malibu blue curacao coconut cream" data-glass="highball" data-liquor="rum">
+    <h2>Rocket Pop</h2>
+    <div class="glass-badge">Highball</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>1oz Grenadine</li>
+      <li>1/2oz Silver Rum</li>
+      <li>1/2oz Malibu</li>
+      <li>1/2oz Blue Curacao</li>
+      <li>3/4oz Coconut Cream</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>In stir cup #1: Add the blue curacao and coconut rum into a glass and stir thoughtfully.</li>
+      <li>In stir cup #2, add the white rum and coconut cream together and stir as well.</li>
+      <li>Pour the grenadine into the bottom of a highball glass.</li>
+      <li>Fill the highball glass with crushed ice.</li>
+      <li>Slowly pour the rum and cream of coconut mixture on top of the crushed ice.</li>
+      <li>After that settles, pour the blue curacao and coconut rum mixture onto the crushed ice to fill the glass.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-search="kamikaze vodka triple sec lime juice" data-glass="coupe" data-liquor="vodka">
+    <h2>Kamikaze</h2>
+    <div class="glass-badge">Coupe</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>1oz Vodka</li>
+      <li>1oz Triple Sec</li>
+      <li>1/2oz Lime Juice</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>Shake with ice in a shaker.</li>
+      <li>Strain into a martini glass.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-search="the abyss vodka rum blue curacao pineapple juice" data-glass="rocks" data-liquor="vodka rum">
+    <h2>The Abyss</h2>
+    <div class="glass-badge">Rocks</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>1oz Vodka</li>
+      <li>1/2oz Rum</li>
+      <li>1/2oz Blue Curacao</li>
+      <li>1/2oz Pineapple Juice</li>
+      <li>Pineapple Juice, to fill</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>Shake and pour over crushed ice.</li>
+      <li>Top with pineapple juice to fill.</li>
+    </ol>
+  </div>
+
+
+  <div class="card" data-search="fitzgerald gin lemon juice simple syrup bitters" data-glass="coupe" data-liquor="gin">
+    <h2>Fitzgerald</h2>
+    <div class="glass-badge">Coupe</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>1 1/2oz Gin</li>
+      <li>3/4oz Lemon Juice</li>
+      <li>1/2oz Simple Syrup</li>
+      <li>2 dashes Bitters</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>Shake with ice and strain into a cocktail coupe.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-search="dick hard vodka gin white rum sprite" data-glass="highball" data-liquor="vodka gin rum">
+    <h2>Dick Hard</h2>
+    <div class="glass-badge">Highball</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>1oz Vodka (Absolut)</li>
+      <li>1oz Gin (Tanqueray)</li>
+      <li>1oz White Rum (Bacardi)</li>
+      <li>Sprite, to fill</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>Stir all liquors together.</li>
+      <li>Fill with Sprite.</li>
+      <li>Garnish with lime and serve.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-search="paloma tequila lime juice paloma mix" data-glass="highball" data-liquor="tequila">
+    <h2>Paloma</h2>
+    <div class="glass-badge">Highball</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>2oz Tequila</li>
+      <li>1/2oz Lime Juice</li>
+      <li>4oz Paloma Mix</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>Stir.</li>
+    </ol>
+  </div>
+
+  <div class="card" data-search="long island iced tea vodka silver rum tequila gin triple sec simple syrup lemon juice coke" data-glass="highball" data-liquor="vodka rum tequila gin">
+    <h2>Long Island Iced Tea</h2>
+    <div class="glass-badge">Highball</div>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>1/2oz Vodka</li>
+      <li>1/2oz Silver Rum</li>
+      <li>1/2oz Tequila</li>
+      <li>1/2oz Gin</li>
+      <li>1/2oz Triple Sec</li>
+      <li>3/4oz Simple Syrup</li>
+      <li>3/4oz Lemon Juice</li>
+      <li>1/2oz Coke</li>
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>Fill a cocktail shaker with ice.</li>
+      <li>Add the vodka, rum, tequila, gin, triple sec, lemon juice, and simple syrup.</li>
+      <li>Shake well for about 10 to 15 seconds until chilled.</li>
+      <li>Strain the mixture into a tall glass (like a Collins or highball glass) filled with fresh ice.</li>
+      <li>Top with a splash of cola to give the drink its characteristic iced-tea color.</li>
+      <li>Stir gently, garnish with a lemon slice, and serve.</li>
+    </ol>
+  </div>
+
+</div>
+
+<footer>Cheers 🥃</footer>
+
+<script>
+  const search = document.getElementById('search');
+  const glassFilter = document.getElementById('glassFilter');
+  const liquorFilter = document.getElementById('liquorFilter');
+  const cards = document.querySelectorAll('.card');
+
+  function applyFilters() {
+    const q = search.value.toLowerCase();
+    const glass = glassFilter.value;
+    const liquor = liquorFilter.value;
+    cards.forEach(card => {
+      const matchesSearch = card.getAttribute('data-search').includes(q);
+      const matchesGlass = !glass || card.getAttribute('data-glass') === glass;
+      const liquors = card.getAttribute('data-liquor').split(' ');
+      const matchesLiquor = !liquor || liquors.includes(liquor);
+      card.classList.toggle('hidden', !(matchesSearch && matchesGlass && matchesLiquor));
+    });
+  }
+
+  search.addEventListener('input', applyFilters);
+  glassFilter.addEventListener('change', applyFilters);
+  liquorFilter.addEventListener('change', applyFilters);
+</script>
+
+</body>
+</html>
