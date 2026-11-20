@@ -108,6 +108,8 @@
     perspective: 1400px;
     cursor: pointer;
     min-height: 300px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .card.hidden {
     display: none;
@@ -126,7 +128,7 @@
   .card-face {
     position: absolute;
     inset: 0;
-    overflow-y: auto;
+    overflow: hidden;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -135,8 +137,10 @@
     -webkit-backface-visibility: hidden;
     transition: border-color 0.2s ease;
   }
-  .card:hover .card-face {
-    border-color: var(--accent);
+  @media (hover: hover) {
+    .card:hover .card-face {
+      border-color: var(--accent);
+    }
   }
   .card-front {
     display: flex;
@@ -580,6 +584,60 @@
     </div>
   </div>
 
+  <div class="card" data-search="lemon drop vodka triple sec cointreau lemon juice simple syrup" data-glass="coupe" data-liquor="vodka">
+    <div class="card-inner">
+      <div class="card-face card-front">
+        <h2>Lemon Drop</h2>
+        <div class="card-divider"></div>
+        <div class="glass-badge">Coupe</div>
+        <div class="liquor-line">Vodka</div>
+        <div class="flip-hint">Tap to view recipe</div>
+      </div>
+      <div class="card-face card-back">
+        <h2>Lemon Drop</h2>
+        <h3>Ingredients</h3>
+        <ul>
+          <li>2oz Vodka</li>
+          <li>3/4oz Triple Sec</li>
+          <li>1oz Lemon Juice</li>
+          <li>3/4oz Simple Syrup</li>
+        </ul>
+        <h3>Instructions</h3>
+        <ol>
+          <li>Add vodka, Cointreau (or triple sec), lemon juice, simple syrup, and a handful of ice to a cocktail shaker.</li>
+          <li>Shake for 30 seconds or until very cold.</li>
+          <li>Strain into the prepared martini glass and serve immediately.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-search="moscow mule vodka lime juice ginger beer" data-glass="highball" data-liquor="vodka">
+    <div class="card-inner">
+      <div class="card-face card-front">
+        <h2>Moscow Mule</h2>
+        <div class="card-divider"></div>
+        <div class="glass-badge">Highball</div>
+        <div class="liquor-line">Vodka</div>
+        <div class="flip-hint">Tap to view recipe</div>
+      </div>
+      <div class="card-face card-back">
+        <h2>Moscow Mule</h2>
+        <h3>Ingredients</h3>
+        <ul>
+          <li>2oz Vodka</li>
+          <li>1/2oz Lime Juice</li>
+          <li>Ginger Beer to top</li>
+        </ul>
+        <h3>Instructions</h3>
+        <ol>
+          <li>Build in the glass over cracked ice.</li>
+          <li>Top with ginger beer.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <footer>Cheers</footer>
@@ -625,8 +683,13 @@
   }
 
   window.addEventListener('load', sizeCards);
+  // Only re-measure when the width changes. Mobile browsers fire 'resize'
+  // when the address bar shows/hides during scroll, which caused jumps.
   let resizeTimeout;
+  let lastWidth = window.innerWidth;
   window.addEventListener('resize', () => {
+    if (window.innerWidth === lastWidth) return;
+    lastWidth = window.innerWidth;
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(sizeCards, 150);
   });
